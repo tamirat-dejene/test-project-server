@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { getMusics, getMusic, updateMusic, createMusic, deleteMusic } from './actions.js';
 dotenv.config({
   path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local'
@@ -8,6 +9,7 @@ dotenv.config({
 const app = express();
 const PORT = process.env.PORT || 9001;
 
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
