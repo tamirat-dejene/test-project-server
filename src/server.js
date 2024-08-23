@@ -15,7 +15,8 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (_, res) => {
-  res.send('<h1>Welcome to the Music API</h1>');
+  // send index.html from public folder
+  res.sendFile('index.html', { root: 'public' });
 });
 
 // connect to postgres database of vercel with credentials fro .env
