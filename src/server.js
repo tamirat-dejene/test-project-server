@@ -6,6 +6,7 @@ dotenv.config({
 });
 
 const app = express();
+const PORT = process.env.PORT || 9001;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -15,7 +16,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (_, res) => {
-  res.send('Welcome to the Music API');
+  res.send('<h1>Welcome to the Music API</h1>');
 });
 
 // get musics with query search q and orderBy o
@@ -50,6 +51,9 @@ app.delete('/musics/:id', async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server listening on port http://${process.env.HOST}:3000`);
+app.listen(PORT || 9002, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
+
+
+export default app;
