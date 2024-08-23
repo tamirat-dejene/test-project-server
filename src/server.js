@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { getMusics, getMusic, updateMusic, createMusic, deleteMusic } from './actions.js';
 dotenv.config({
-  path: './.env.local'
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local'
 });
 
 const app = express();
