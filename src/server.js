@@ -16,26 +16,63 @@ app.use((req, res, next) => {
 
 app.get('/', (_, res) => {
   // send index.html from public folder
-  res.sendFile('index.html', { root: 'public' });
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Test-Project-Serverless</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          color: #333;
+          margin: 0;
+          padding: 20px;
+          line-height: 1.6;
+        }
+
+        h1 {
+          color: #007bff;
+          text-align: center;
+          margin-bottom: 20px;
+        }
+
+        p {
+          background-color: #fff;
+          padding: 10px;
+          border-radius: 5px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          margin: 10px 0;
+        }
+
+        code {
+          background-color: #e7e7e7;
+          padding: 2px 4px;
+          border-radius: 4px;
+          font-size: 1.1em;
+          color: #d63384;
+        }
+      </style>
+    </head>
+
+    <body>
+      <h1>Welcome to the Music API</h1>
+      <p>Use the <code>/musics</code> endpoint to get music data</p>
+      <p>Use the <code>/musics?q=searchparam&o=orderby</code> endpoint to search music data</p>
+      <p>Use the <code>/musics/:id</code> endpoint to get a single music data</p>
+      <p>Use the <code>/musics</code> endpoint with <code>POST</code> to create a new music</p>
+      <p>Use the <code>/musics/:id</code> endpoint with <code>PUT</code> to update a music</p>
+      <p>Use the <code>/musics/:id</code> endpoint with <code>DELETE</code> to delete a music</p>
+    </body>
+
+    </html>
+  `)
 });
 
-// connect to postgres database of vercel with credentials fro .env
-// http://localhost:3000/connect
-app.get('/connect', async (req, res) => {
-  const { Client } = await import('pg');
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false
-    }
-  });
-  await client.connect();
-  const { rows } = await client.query('SELECT NOW()');
-  await client.end();
-  res.json(rows);
-});
 
-// get musics with query search q and orderBy o
 // http://localhost:3000/musics?q=love&o=artist
 app.get('/musics', async (req, res) => {
   const musics = await getMusics(req.query.q, req.query.o);
