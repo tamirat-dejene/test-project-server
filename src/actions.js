@@ -9,6 +9,7 @@ const music = { id: 1, title: '', artist: '', album: '', genre: '', duration: ''
 const dirname = new URL('.', import.meta.url).pathname;
 const __dirname = dirname.substring(1, dirname.length - 1);
 
+
 export const getMusics = async (query, orderBy) => {
   let musics = JSON.parse(await readFile(path.join(__dirname, 'data', 'mockmusics.json'), 'utf-8')) || [];
   if (query) musics = matchSorter(musics, query, { keys: ['title', 'artist', 'album', 'genre'] });
