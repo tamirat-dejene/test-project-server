@@ -1,0 +1,54 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Dependency directories
+/.pnp/
+.pnp.js
+
+# Optional npm cache directory
+.npm
+
+# ESLint cache
+.eslintcache
+
+# Parcel cache
+.cache
+
+# Next.js build output
+.next/
+
+# Nuxt.js build output
+.nuxt/
+
+# Vuepress build output
+.vuepress/dist/
+
+# Serverless directories
+.serverless/
+
+# Firebase build output
+.firebase/
+
+# Yarn v2
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+
+# TypeScript
+*.tsbuildinfo
+
+# Visual Studio Code
+.vscode/
+
+
+# env
+.env
+.env.local
+.env.development
+.env.test
+.env.production
