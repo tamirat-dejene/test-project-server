@@ -77,32 +77,53 @@ app.get('/', (_, res) => {
 
 // http://localhost:3000/musics?q=love&o=artist
 app.get('/musics', async (req, res) => {
-  const musics = await getMusics(req.query.q, req.query.o);
-  res.json(musics);
+  try {
+    const musics = await getMusics(req.query.q, req.query.o);
+    res.json(musics);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.get('/musics/:id', async (req, res) => {
+  try {
   const music = await getMusic(parseInt(req.params.id));
   if (music) res.json(music);
-  else res.status(404).send('Music not found');
+    else res.status(404).send('Music not found');
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.post('/musics', async (req, res) => {
-  const music = await createMusic();
-  res.json(music);
+  try {
+    const music = await createMusic(req.body);
+    res.json(music);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.put('/musics/:id', async (req, res) => {
-  const music = await updateMusic(parseInt(req.params.id), req.body);
-  res.json(music);
+  try {
+    const music = await updateMusic(parseInt(req.params.id), req.body);
+    res.json(music);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.delete('/musics/:id', async (req, res) => {
-  const result = await deleteMusic(parseInt(req.params.id));
-  if (result) {
-    res.send('Music deleted');
-  } else {
-    res.status(404).send('Music not found');
+
+  try {
+    const result = await deleteMusic(parseInt(req.params.id));
+    if (result) {
+      res.send('Music deleted');
+    } else {
+      res.status(404).send('Music not found');
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 
