@@ -18,6 +18,22 @@ app.get('/', (_, res) => {
   res.send('<h1>Welcome to the Music API</h1>');
 });
 
+// connect to postgres database of vercel with credentials fro .env
+// http://localhost:3000/connect
+app.get('/connect', async (req, res) => {
+  const { Client } = await import('pg');
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+  await client.connect();
+  const { rows } = await client.query('SELECT NOW()');
+  await client.end();
+  res.json(rows);
+});
+
 // get musics with query search q and orderBy o
 // http://localhost:3000/musics?q=love&o=artist
 app.get('/musics', async (req, res) => {
