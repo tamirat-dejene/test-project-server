@@ -14,11 +14,22 @@ const readMusics = async () => {
 
 export const getMusics = async (query, orderBy) => {
   let musics = await readMusics();
-  if (query) musics = matchSorter(musics, query, { keys: ['title', 'artist', 'album', 'genre'] });
-  if (orderBy) musics = musics.sort(sortBy(orderBy));
-  else musics = musics.sort(sortBy('title'));
+  if (query) musics = matchSorter(musics, query, { keys: ['title', 'artist', 'album', 'genre', 'duration'] });
+  if (orderBy) {
+    if (orderBy === 'a-z') musics = musics.sort(sortBy('title'));
+    else if (orderBy === 'z-a') musics = musics.sort(sortBy('-title'));
+    else if (orderBy === 'artist') musics = musics.sort(sortBy('artist'));
+    else if (orderBy === 'duration') musics = musics.sort(sortBy('duration'));
+    else if (orderBy === 'genre') musics = musics.sort(sortBy('genre'));
+    else if (orderBy === 'album') musics = musics.sort(sortBy('album'));
+    else if (orderBy === 'id')
+    musics = musics.sort(sortBy(orderBy))
+  } else musics = musics.sort(sortBy('title'));
   return musics;
 }
+
+getMusics('', 'z-a').then(console.log);
+
 
 export const getMusic = async (id) => {
   const { rows } = await pool.query('SELECT * FROM musics WHERE id=$1', [id]);
