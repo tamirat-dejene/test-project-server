@@ -28,9 +28,6 @@ export const getMusics = async (query, orderBy) => {
   return musics;
 }
 
-getMusics('', 'z-a').then(console.log);
-
-
 export const getMusic = async (id) => {
   const { rows } = await pool.query('SELECT * FROM musics WHERE id=$1', [id]);
   return rows[0];

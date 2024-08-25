@@ -88,9 +88,9 @@ app.get('/musics', async (req, res) => {
 
 app.get('/musics/:id', async (req, res) => {
   try {
-  const music = await getMusic(parseInt(req.params.id));
-  if (music) res.json(music);
-    else res.status(404).send('Music not found');
+    const music = await getMusic(parseInt(req.params.id));
+    if (music) res.json(music);
+    else res.status(404).json({ message: 'Music not found' });
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -101,7 +101,7 @@ app.post('/musics', async (req, res) => {
     const music = await createMusic(req.body);
     res.json(music);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -110,7 +110,7 @@ app.put('/musics/:id', async (req, res) => {
     const music = await updateMusic(parseInt(req.params.id), req.body);
     res.json(music);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -119,12 +119,12 @@ app.delete('/musics/:id', async (req, res) => {
   try {
     const result = await deleteMusic(parseInt(req.params.id));
     if (result) {
-      res.send('Music deleted');
+      res.json({ message: 'Music deleted' });
     } else {
-      res.status(404).send('Music not found');
+      res.status(404).json({ message: 'Music not found' });
     }
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({ message: error.message });
   }
 });
 
