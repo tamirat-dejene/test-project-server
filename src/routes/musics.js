@@ -1,4 +1,6 @@
 import express from 'express';
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv';
 import { createMusic, deleteMusic, getMusic, getMusics, updateMusic } from '../actions.js';
 
 const router = express.Router();

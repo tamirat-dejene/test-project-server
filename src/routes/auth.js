@@ -19,6 +19,7 @@ router.post('/login', async (req, res) => {
     const refreshToken = jwt.sign({ email: user.email }, REFRESH_TOKEN.secret, { expiresIn: REFRESH_TOKEN.expiry });
 
     res.header('Authorization', `Bearer ${accessToken}`);
+    res.header('Access-Control-Expose-Headers', 'Authorization');
     res.cookie('refreshToken', refreshToken, { httpOnly: true });
     res.json(user);
   } catch (error) {
@@ -38,6 +39,7 @@ router.post('/refresh', async (req, res) => {
 
     const accessToken = jwt.sign({ email: decoded.email }, ACCESS_TOKEN.secret, { expiresIn: ACCESS_TOKEN.expiry });
     res.header('Authorization', `Bearer ${accessToken}`);
+    res.header('Access-Control-Expose-Headers', 'Authorization');
   });
 });
 
