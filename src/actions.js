@@ -1,7 +1,9 @@
-import { matchSorter } from 'match-sorter';
-import sortBy from 'sort-by';
-import dotenv from 'dotenv';
 import pg from 'pg';
+import dotenv from 'dotenv';
+import sortBy from 'sort-by';
+import { createHash, timingSafeEqual } from 'crypto';
+import { matchSorter } from 'match-sorter';
+
 dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local' });
 
 const { Pool } = pg;
@@ -10,6 +12,42 @@ const pool = new Pool({ connectionString: process.env.NODE_POSTGRES_URL });
 const readMusics = async () => {
   const { rows } = await pool.query('SELECT * FROM musics');
   return rows;
+}
+
+export const getUser = async (email) => {
+  const { rows } = await pool.query('SELECT * FROM music_api_users WHERE email=$1', [email]);
+  return rows[0];
+}
+
+export const login = async (email, password) => {
+  const user = await getUser(email);
+  if (!user) throw new Error('User not found');
+  
+  const hashedPassword = createHash('SHA256').update(password, 'utf8').digest('base64');
+
+  const isValid = timingSafeEqual(Buffer.from(hashedPassword), Buffer.from(user.password));
+  if (!isValid) throw new Error('Invalid password');
+  return {...user, password: '******'};
+}
+
+export const createUser = async (newUser) => {
+  const { username, email, password } = newUser;
+  const userAlreadyExists = await getUser(email);
+  if (userAlreadyExists) throw new Error('User already exists');
+  
+  const hashedPassword = createHash('SHA256').update(password, 'utf8').digest('base64');
+
+  try {
+    const client = await pool.connect();
+    await client.query('INSERT INTO music_api_users (username, email, password) VALUES ($1, $2, $3)',
+      [username, email, hashedPassword]);
+    client.release();
+
+    const user = await getUser(email);
+    return { ...user, password: '******'}
+  } catch (error) {
+    throw error;
+  }
 }
 
 export const getMusics = async (query, orderBy) => {
@@ -23,7 +61,7 @@ export const getMusics = async (query, orderBy) => {
     else if (orderBy === 'genre') musics = musics.sort(sortBy('genre'));
     else if (orderBy === 'album') musics = musics.sort(sortBy('album'));
     else if (orderBy === 'id')
-    musics = musics.sort(sortBy(orderBy))
+      musics = musics.sort(sortBy(orderBy))
   } else musics = musics.sort(sortBy('title'));
   return musics;
 }

@@ -1,13 +1,14 @@
-import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
-import { getMusics, getMusic, updateMusic, createMusic, deleteMusic } from './actions.js';
-dotenv.config({
-  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local'
-});
+import dotenv from 'dotenv';
+import express from 'express';
+import AuthRouter from './routes/auth.js';
+import MusicRouter from './routes/musics.js';
+
+dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local' });
 
 const app = express();
 const PORT = process.env.PORT || 9001;
+
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
@@ -16,6 +17,9 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
 });
+
+app.use('/auth', AuthRouter);
+app.use('/musics', MusicRouter);
 
 app.get('/', (_, res) => {
   // send index.html from public folder
@@ -75,58 +79,6 @@ app.get('/', (_, res) => {
   `)
 });
 
-
-// http://localhost:3000/musics?q=love&o=artist
-app.get('/musics', async (req, res) => {
-  try {
-    const musics = await getMusics(req.query.q, req.query.o);
-    res.json(musics);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
-
-app.get('/musics/:id', async (req, res) => {
-  try {
-    const music = await getMusic(parseInt(req.params.id));
-    if (music) res.json(music);
-    else res.status(404).json({ message: 'Music not found' });
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
-
-app.post('/musics', async (req, res) => {
-  try {
-    const music = await createMusic(req.body);
-    res.json(music);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-app.put('/musics/:id', async (req, res) => {
-  try {
-    const music = await updateMusic(parseInt(req.params.id), req.body);
-    res.json(music);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-app.delete('/musics/:id', async (req, res) => {
-
-  try {
-    const result = await deleteMusic(parseInt(req.params.id));
-    if (result) {
-      res.json({ message: 'Music deleted' });
-    } else {
-      res.status(404).json({ message: 'Music not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 app.listen(PORT || 9002, () => {
   console.log(`Server listening on port ${PORT}`);
