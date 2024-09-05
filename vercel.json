@@ -11,12 +11,5 @@
       "src": "/(.*)",
       "dest": "src/server.js"
     }
-  ],
-  "redirects": [
-    {
-      "source": "/(.*)",   
-      "destination": "https://test-project-l6lsajd3g-tamirat-dejenes-projects.vercel.app/$1",
-      "permanent": true    
-    }
   ]
 }
