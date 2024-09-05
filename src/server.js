@@ -6,7 +6,7 @@ import AuthRouter from './routes/auth.js';
 import MusicRouter from './routes/musics.js';
 
 dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local' });
-// hello cors
+
 const app = express();
 const PORT = process.env.PORT || 9001;
 const CLIENT = process.env.CLIENT || 'http://localhost:4000';
@@ -23,7 +23,6 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
 });
-
 
 app.get('/', (_, res) => {
   res.send(`
