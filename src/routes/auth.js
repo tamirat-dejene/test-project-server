@@ -31,11 +31,7 @@ router.post('/refresh', async (req, res) => {
   req.co
   jwt.verify(refreshToken, REFRESH_TOKEN.secret, (error, decoded) => {
     if (error) {
-      res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
-      });
+      res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
       return res.status(401).json({ message: 'Invalid refresh token' });
     }
 
@@ -55,11 +51,7 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
-  res.clearCookie('refreshToken', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none',
-  });
+  res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
   res.status(200).json({ message: 'Logged out' });
 });
 
