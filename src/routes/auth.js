@@ -18,7 +18,7 @@ router.post('/login', async (req, res) => {
     const refreshToken = jwt.sign({ email: user.email }, REFRESH_TOKEN.secret, { expiresIn: REFRESH_TOKEN.expiry });
 
     res.header('Authorization', `Bearer ${accessToken}`);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
     res.json(user);
   } catch (error) {

@@ -1,6 +1,7 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
 import sortBy from 'sort-by';
+import jwt from 'jsonwebtoken';
 import { createHash, timingSafeEqual } from 'crypto';
 import { matchSorter } from 'match-sorter';
 
@@ -102,4 +103,13 @@ export const deleteMusic = async (id) => {
     return true;
   }
   return false;
+}
+
+export const verifyToken = async (token, secret) => {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, secret, (error, decoded) => {
+      if (error) reject(error);
+      resolve(decoded);
+    });
+  });
 }

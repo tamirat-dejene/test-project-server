@@ -1,11 +1,18 @@
 import express from 'express';
-import { createMusic, deleteMusic, getMusic, getMusics, updateMusic } from '../actions.js';
+import { createMusic, deleteMusic, getMusic, getMusics, updateMusic, verifyToken, } from '../actions.js';
 
 const router = express.Router();
+const access_token_secret = process.env.AUTH_ACCESS_TOKEN_SECRET;
 
 // http://localhost:3000/musics?q=love&o=artist
 router.get('/', async (req, res) => {
   try {
+    const token = req.headers.authorization?.split(' ')[1];
+    try {
+      await verifyToken(token, access_token_secret);
+    } catch (error) {
+      return res.status(401).json({ message: error.message });
+    }
     const musics = await getMusics(req.query.q, req.query.o);
     res.json(musics);
   } catch (error) {
@@ -15,6 +22,12 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
+    const token = req.headers.authorization?.split(' ')[1];
+    try {
+      await verifyToken(token, access_token_secret);
+    } catch (error) {
+      return res.status(401).json({ message: 'Unauthorized Access' });
+    }
     const music = await getMusic(parseInt(req.params.id));
     if (music) res.json(music);
     else res.status(404).json({ message: 'Music not found' });
@@ -25,6 +38,12 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    const token = req.headers.authorization?.split(' ')[1];
+    try {
+      await verifyToken(token, access_token_secret);
+    } catch (error) {
+      return res.status(401).json({ message: error.message });
+    }
     const music = await createMusic(req.body);
     res.json(music);
   } catch (error) {
@@ -34,6 +53,12 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
+    const token = req.headers.authorization?.split(' ')[1];
+    try {
+      await verifyToken(token, access_token_secret);
+    } catch (error) {
+      return res.status(401).json({ message: error.message });
+    }
     const music = await updateMusic(parseInt(req.params.id), req.body);
     res.json(music);
   } catch (error) {
@@ -43,6 +68,13 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
+    const token = req.headers.authorization?.split(' ')[1];
+    try {
+      await verifyToken(token, access_token_secret);
+    } catch (error) {
+      return res.status(401).json({ message: error.message });
+    }
+
     const result = await deleteMusic(parseInt(req.params.id));
     if (result) {
       res.json({ message: 'Music deleted' });
