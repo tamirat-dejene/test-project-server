@@ -18,7 +18,7 @@ router.post('/login', async (req, res) => {
     const refreshToken = jwt.sign({ email: user.email }, REFRESH_TOKEN.secret, { expiresIn: REFRESH_TOKEN.expiry });
 
     res.header('Authorization', `Bearer ${accessToken}`);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none' });
 
     res.json(user);
   } catch (error) {
@@ -36,6 +36,7 @@ router.post('/refresh', async (req, res) => {
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
       });
       return res.status(401).json({ message: 'Invalid refresh token' });
     }
@@ -59,6 +60,7 @@ router.post('/logout', (req, res) => {
   res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
   });
   res.status(200).json({ message: 'Logged out' });
 });
