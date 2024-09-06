@@ -1,8 +1,6 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import jwt from 'jsonwebtoken'
 import { createUser, login } from '../actions.js';
-dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local' });
 
 const ACCESS_TOKEN = { secret: process.env.AUTH_ACCESS_TOKEN_SECRET, expiry: process.env.AUTH_ACCESS_TOKEN_EXPIRY };
 const REFRESH_TOKEN = { secret: process.env.AUTH_REFRESH_TOKEN_SECRET, expiry: process.env.AUTH_REFRESH_TOKEN_EXPIRY };

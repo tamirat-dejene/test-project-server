@@ -69,6 +69,7 @@ app.get('/', (_, res) => {
 
     <body>
       <h1>Welcome to the Music API</h1>
+      <p>Visit <code> <a href='https://test-project-tamiu-dejene.vercel.app/' target='_blank'>page</a></code></p>
       <p>Use the <code>/musics</code> endpoint to get music data</p>
       <p>Use the <code>/musics?q=searchparam&o=orderby</code> endpoint to search music data</p>
       <p>Use the <code>/musics/:id</code> endpoint to get a single music data</p>
