@@ -7,6 +7,8 @@ import { matchSorter } from 'match-sorter';
 
 dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local' });
 
+const ACCESS_TOKEN = { secret: process.env.AUTH_ACCESS_TOKEN_SECRET, expiry: process.env.AUTH_ACCESS_TOKEN_EXPIRY };
+const REFRESH_TOKEN = { secret: process.env.AUTH_REFRESH_TOKEN_SECRET, expiry: process.env.AUTH_REFRESH_TOKEN_EXPIRY };
 const { Pool } = pg;
 const pool = new Pool({ connectionString: process.env.NODE_POSTGRES_URL });
 
@@ -105,11 +107,22 @@ export const deleteMusic = async (id) => {
   return false;
 }
 
-export const verifyToken = async (token, secret) => {
-  return new Promise((resolve, reject) => {
-    jwt.verify(token, secret, (error, decoded) => {
-      if (error) reject(error);
-      resolve(decoded);
-    });
-  });
-}
+export const verifyToken = async (accessToken, refreshToken) => {
+  try {
+    jwt.verify(accessToken, ACCESS_TOKEN.secret);
+    return { isValid: true };
+  } catch (error) {
+    try {
+      const decodedRefreshToken = jwt.verify(refreshToken, REFRESH_TOKEN.secret);
+      const newAccessToken = jwt.sign(
+        { email: decodedRefreshToken.email },
+        ACCESS_TOKEN.secret,
+        { expiresIn: ACCESS_TOKEN.expiry }
+      );
+
+      return { isValid: false, newAccessToken };
+    } catch (refreshError) {
+      return { isValid: false };
+    }
+  }
+};

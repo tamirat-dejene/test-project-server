@@ -8,13 +8,14 @@ const access_token_secret = process.env.AUTH_ACCESS_TOKEN_SECRET;
 router.get('/', async (req, res) => {
   try {
     // Authorize
-    const token = req.headers.authorization?.split(' ')[1];
-    try {
-      await verifyToken(token, access_token_secret);
-    } catch (error) {
-      return res.status(401).json({ message: error.message });
-    }
+    const accessToken = req.headers.authorization?.split(' ')[1];
+    const refreshToken = req.cookies.refreshToken;
+    const { isValid, newAccessToken } = await verifyToken(accessToken, refreshToken);
 
+    if (!isValid && !newAccessToken) return res.status(401).json({ message: 'Unauthorized access' });
+    if (newAccessToken) res.setHeader('Authorization', `Bearer ${newAccessToken}`);
+
+    // Fetch music data
     const musics = await getMusics(req.query.q, req.query.o);
     res.json(musics);
   } catch (error) {
@@ -25,13 +26,14 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     // Authorize
-    const token = req.headers.authorization?.split(' ')[1];
-    try {
-      await verifyToken(token, access_token_secret);
-    } catch (error) {
-      return res.status(401).json({ message: error.message });
-    }
+    const accessToken = req.headers.authorization?.split(' ')[1];
+    const refreshToken = req.cookies.refreshToken;
+    const { isValid, newAccessToken } = await verifyToken(accessToken, refreshToken);
 
+    if (!isValid && !newAccessToken) return res.status(401).json({ message: 'Unauthorized access' });
+    if (newAccessToken) res.setHeader('Authorization', `Bearer ${newAccessToken}`);
+
+    // Fetch music data
     const music = await getMusic(parseInt(req.params.id));
     if (music) res.json(music);
     else res.status(404).json({ message: 'Music not found' });
@@ -43,13 +45,14 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     // Authorize
-    const token = req.headers.authorization?.split(' ')[1];
-    try {
-      await verifyToken(token, access_token_secret);
-    } catch (error) {
-      return res.status(401).json({ message: error.message });
-    }
+    const accessToken = req.headers.authorization?.split(' ')[1];
+    const refreshToken = req.cookies.refreshToken;
+    const { isValid, newAccessToken } = await verifyToken(accessToken, refreshToken);
 
+    if (!isValid && !newAccessToken) return res.status(401).json({ message: 'Unauthorized access' });
+    if (newAccessToken) res.setHeader('Authorization', `Bearer ${newAccessToken}`);
+
+    // Create music
     const music = await createMusic(req.body);
     res.json(music);
   } catch (error) {
@@ -60,13 +63,14 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     // Authorize
-    const token = req.headers.authorization?.split(' ')[1];
-    try {
-      await verifyToken(token, access_token_secret);
-    } catch (error) {
-      return res.status(401).json({ message: error.message });
-    }
+    const accessToken = req.headers.authorization?.split(' ')[1];
+    const refreshToken = req.cookies.refreshToken;
+    const { isValid, newAccessToken } = await verifyToken(accessToken, refreshToken);
 
+    if (!isValid && !newAccessToken) return res.status(401).json({ message: 'Unauthorized access' });
+    if (newAccessToken) res.setHeader('Authorization', `Bearer ${newAccessToken}`);
+
+    // Update music
     const music = await updateMusic(parseInt(req.params.id), req.body);
     res.json(music);
   } catch (error) {
@@ -77,13 +81,14 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     // Authorize
-    const token = req.headers.authorization?.split(' ')[1];
-    try {
-      await verifyToken(token, access_token_secret);
-    } catch (error) {
-      return res.status(401).json({ message: error.message });
-    }
-    
+    const accessToken = req.headers.authorization?.split(' ')[1];
+    const refreshToken = req.cookies.refreshToken;
+    const { isValid, newAccessToken } = await verifyToken(accessToken, refreshToken);
+
+    if (!isValid && !newAccessToken) return res.status(401).json({ message: 'Unauthorized access' });
+    if (newAccessToken) res.setHeader('Authorization', `Bearer ${newAccessToken}`);
+
+    // Delete music
     const result = await deleteMusic(parseInt(req.params.id));
     if (result) {
       res.json({ message: 'Music deleted' });

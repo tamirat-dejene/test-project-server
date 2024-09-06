@@ -6,7 +6,6 @@ const ACCESS_TOKEN = { secret: process.env.AUTH_ACCESS_TOKEN_SECRET, expiry: pro
 const REFRESH_TOKEN = { secret: process.env.AUTH_REFRESH_TOKEN_SECRET, expiry: process.env.AUTH_REFRESH_TOKEN_EXPIRY };
 const router = express.Router();
 
-// Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -16,7 +15,7 @@ router.post('/login', async (req, res) => {
     const refreshToken = jwt.sign({ email: user.email }, REFRESH_TOKEN.secret, { expiresIn: REFRESH_TOKEN.expiry });
 
     res.header('Authorization', `Bearer ${accessToken}`);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' });
 
     res.json(user);
   } catch (error) {
@@ -31,7 +30,7 @@ router.post('/refresh', async (req, res) => {
   req.co
   jwt.verify(refreshToken, REFRESH_TOKEN.secret, (error, decoded) => {
     if (error) {
-      res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+      res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' });
       return res.status(401).json({ message: 'Invalid refresh token' });
     }
 
@@ -51,7 +50,7 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
-  res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+  res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' });
   res.status(200).json({ message: 'Logged out' });
 });
 
