@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken'
-import { createUser, login } from '../actions.js';
+import { createUser, getUser, login } from '../actions.js';
 
 const ACCESS_TOKEN = { secret: process.env.AUTH_ACCESS_TOKEN_SECRET, expiry: process.env.AUTH_ACCESS_TOKEN_EXPIRY };
 const REFRESH_TOKEN = { secret: process.env.AUTH_REFRESH_TOKEN_SECRET, expiry: process.env.AUTH_REFRESH_TOKEN_EXPIRY };
@@ -28,15 +28,16 @@ router.post('/refresh', async (req, res) => {
   if (!refreshToken) return res.status(401).json({ message: 'Refresh token not found' });
 
   req.co
-  jwt.verify(refreshToken, REFRESH_TOKEN.secret, (error, decoded) => {
+  jwt.verify(refreshToken, REFRESH_TOKEN.secret, async (error, decoded) => {
     if (error) {
       res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' });
       return res.status(401).json({ message: 'Invalid refresh token' });
     }
 
     const accessToken = jwt.sign({ email: decoded.email }, ACCESS_TOKEN.secret, { expiresIn: ACCESS_TOKEN.expiry });
+    const user = await getUser(decoded.email);
     res.header('Authorization', `Bearer ${accessToken}`);
-    res.status(200).json({ message: 'Token refreshed' });
+    res.status(200).json({ ...user, password: "*****" });
   });
 });
 
