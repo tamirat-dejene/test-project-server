@@ -26,8 +26,7 @@ router.post('/login', async (req, res) => {
 router.post('/refresh', async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: 'Refresh token not found' });
-
-  req.co
+  
   jwt.verify(refreshToken, REFRESH_TOKEN.secret, async (error, decoded) => {
     if (error) {
       res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' });
